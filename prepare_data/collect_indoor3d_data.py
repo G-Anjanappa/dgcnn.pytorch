@@ -24,5 +24,5 @@ with open(revise_file, "w") as f:
 for anno_path in anno_paths:
 	print(anno_path)
 	elements = anno_path.split('/')
-	out_filename = elements[-3]+'_'+elements[-2]+'.txt' # Area_1_hallway_1.npy
-	indoor3d_util.collect_point_label(anno_path, os.path.join(output_folder, out_filename), 'txt')
+	out_filename = elements[-3]+'_'+elements[-2]+'.npy' # Area_1_hallway_1.npy
+	indoor3d_util.collect_point_label(anno_path, os.path.join(output_folder, out_filename), 'numpy')
