@@ -241,7 +241,7 @@ def load_color_semseg():
             column_index = column_index + 200
             color_index = color_index + 1
             label_index = label_index + 1
-            if color_index >= 13:
+            if color_index >= 7:
                 cv2.imwrite("prepare_data/meta/semseg_colors.png", img, [cv2.IMWRITE_PNG_COMPRESSION, 0])
                 return np.array(colors)
             elif (column_index >= 1280):

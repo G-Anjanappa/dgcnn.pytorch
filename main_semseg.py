@@ -45,16 +45,16 @@ def _init_():
 
 
 def calculate_sem_IoU(pred_np, seg_np, visual=False):
-    I_all = np.zeros(13)
-    U_all = np.zeros(13)
+    I_all = np.zeros(7)
+    U_all = np.zeros(7)
     for sem_idx in range(seg_np.shape[0]):
-        for sem in range(13):
+        for sem in range(7):
             I = np.sum(np.logical_and(pred_np[sem_idx] == sem, seg_np[sem_idx] == sem))
             U = np.sum(np.logical_or(pred_np[sem_idx] == sem, seg_np[sem_idx] == sem))
             I_all[sem] += I
             U_all[sem] += U
     if visual:
-        for sem in range(13):
+        for sem in range(7):
             if U_all[sem] == 0:
                 I_all[sem] = 1
                 U_all[sem] = 1
