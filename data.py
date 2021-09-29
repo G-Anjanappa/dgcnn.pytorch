@@ -22,7 +22,7 @@ import torch
 import json
 import cv2
 from torch.utils.data import Dataset
-
+import shutil
 
 def download_modelnet40():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -127,13 +127,37 @@ def prepare_test_data_semseg():
         os.system('python prepare_data/gen_indoor3d_h5.py')
 
 
+def prepare_train_data_semseg():
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_DIR = os.path.join(BASE_DIR, 'data')
+    if not os.path.exists(os.path.join(DATA_DIR, 'indoor3d_sem_seg_hdf5_data_train')):
+        source_data_dir = os.path.join(DATA_DIR, 'indoor3d_sem_seg_hdf5_data')
+        dest_data_dir = os.path.join(DATA_DIR, 'indoor3d_sem_seg_hdf5_data_train')
+        shutil.copytree(source_data_dir, dest_data_dir)
+
+        with open(os.path.join(dest_data_dir, "all_files.txt")) as f:
+            all_files = ['_train/'.join(line.rstrip().split('/')) for line in f]
+
+            for i in all_files:
+                file = h5py.File(os.path.join(DATA_DIR, i), 'r+')
+                data = file["label"]
+                label = data[:]
+                temp = np.where(label > 4, np.where(label == 6, 5, 6), label)
+                data[:] = temp
+
+        with open(os.path.join(dest_data_dir, "all_files.txt"), 'w') as f:
+            for element in all_files:
+                f.write(element + "\n")
+
+
 def load_data_semseg(partition, test_area):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     DATA_DIR = os.path.join(BASE_DIR, 'data')
     download_S3DIS()
+    prepare_train_data_semseg()
     prepare_test_data_semseg()
     if partition == 'train':
-        data_dir = os.path.join(DATA_DIR, 'indoor3d_sem_seg_hdf5_data')
+        data_dir = os.path.join(DATA_DIR, 'indoor3d_sem_seg_hdf5_data_train')
     else:
         data_dir = os.path.join(DATA_DIR, 'indoor3d_sem_seg_hdf5_data_test')
     with open(os.path.join(data_dir, "all_files.txt")) as f:
